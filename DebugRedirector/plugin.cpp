@@ -7,7 +7,6 @@
 #include <QCoreApplication>
 #include <QTimer>
 #include "plugin.h"
-#include "messagehandler.h"
 #include "StdOutRedirector.h"
 
 #define PLUGIN_API_VERSION 22
@@ -18,7 +17,7 @@ StdOutRedirector *redirector;
 QTimer *timer;
 
 const char* ts3plugin_name() {
-	return "DebugRedirector";
+	return "Debug Redirector";
 }
 
 const char* ts3plugin_version() {
@@ -64,15 +63,22 @@ static void hideConsole()
 	} while (handle != nullptr);
 }
 
+static void handler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+	QByteArray arr = msg.toLatin1();
+	const char* c_str = arr.data();
+	ts3Functions.printMessageToCurrentTab(c_str);
+}
+
 int ts3plugin_init() {
 	if (QCoreApplication::arguments().contains("-console"))
 	{
-		hideConsole();
-		qInstallMessageHandler(messageHandler::handler);
-		redirector = new StdOutRedirector();
+		hideConsole(); // hide default output window
+		qInstallMessageHandler(handler); // grab any messages from qDebug
+		redirector = new StdOutRedirector(); // redirect stdout to pipe
 		timer = new QTimer();
 		timer->setInterval(1000);
-		QObject::connect(timer, &QTimer::timeout, timerTick);
+		QObject::connect(timer, &QTimer::timeout, timerTick);  // check pipe contents on timer tick
 		timer->start();
 	}
     return 0;

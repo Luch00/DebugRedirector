@@ -76,7 +76,6 @@
     <ClInclude Include="DebugRedirector.h" />
     <ClInclude Include="debugredirector_global.h" />
     <ClInclude Include="globals.h" />
-    <ClInclude Include="messagehandler.h" />
     <ClInclude Include="plugin.h" />
     <CustomBuild Include="StdOutRedirector.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
